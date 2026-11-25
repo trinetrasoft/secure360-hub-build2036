@@ -7,7 +7,8 @@
 <p align="center">
   <a href="https://trinetrasoft.github.io/secure360-hub-build2036/agentic-soc/"><b>▶ Live agentic SOC demo</b></a> ·
   <a href="https://trinetrasoft.github.io/secure360-hub-build2036/">Secure360 Hub console</a> ·
-  <a href="https://trinetrasoft.github.io/secure360-hub-build2036/demo/">Demo video</a>
+  <a href="https://trinetrasoft.github.io/secure360-hub-build2036/demo/">Demo video</a> ·
+  <a href="docs/Secure360_Hub_BUILD2036_Trinetra_Soft.pdf">Solution deck (PDF)</a>
 </p>
 
 ---
@@ -35,6 +36,8 @@ Secure360 Hub is a security, governance and AI-security command centre. This pro
 | **💬 SOC Copilot agent** | Answers analysts only from the current incident's masked context, refuses credential and cross-tenant questions, and writes the closure report and knowledge-base entry. |
 | **Immutable audit** | Every step is an append-only, SHA-256 hash-chained record. Updates and deletes are rejected, and any edit breaks the chain. |
 | **Model-agnostic** | The same tool contracts export to **OpenAI, Anthropic and AWS Bedrock** function-calling formats. |
+
+![Architecture](docs/architecture.png)
 
 ```mermaid
 flowchart LR
