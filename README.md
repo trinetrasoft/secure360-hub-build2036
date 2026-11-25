@@ -120,6 +120,14 @@ React 18 · Vite 5 · Tailwind CSS · Recharts · Python 3.12 · FastAPI · Pyda
 
 ## Team
 
-**Trinetra Soft**, Hyderabad, Telangana: *Engineering Secure Intelligence For The Digital Future.* · <https://trinetrasoft.com> · info@trinetrasoft.com
+**Trinetra Soft**, Hyderabad, Telangana: *Engineering Secure Intelligence For The Digital Future.*
+
+| Role | Name |
+|---|---|
+| Team Leader | Surya Santhosh |
+| Member | Yogi Raja |
+| Member | Murthy |
+
+ · <https://trinetrasoft.com> · info@trinetrasoft.com
 
 © 2026 Trinetra Soft. All rights reserved. Source published for BUILD 2036 evaluation.
