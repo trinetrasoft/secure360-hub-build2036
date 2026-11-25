@@ -1,0 +1,28 @@
+{
+  "name": "db-command-centre",
+  "private": true,
+  "version": "2.4.1",
+  "type": "module",
+  "description": "Secure360 Hub by Trinetra Soft: governed multi-agent SOC (Applied AI & Agentic Intelligence, BUILD 2036)",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "echo 'Add eslint if desired'",
+    "test": "node --test tests/agentic-soc.test.mjs",
+    "bench": "node tests/benchmark.mjs 10000"
+  },
+  "dependencies": {
+    "lucide-react": "^0.383.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "recharts": "^2.12.7"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.4",
+    "vite": "^5.3.1"
+  }
+}

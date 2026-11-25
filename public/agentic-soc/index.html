@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Secure360 Hub · Agentic SOC — Trinetra Soft</title>
+<meta name="description" content="Live demo: governed multi-agent Security Operations Centre. Triage, response and copilot agents with PII guardrails, risk-based human approval and a hash-chained audit trail." />
+<link rel="icon" href="trinetra-emblem.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --bg:#f4f6fb; --panel:#fff; --line:#dbe3ef; --line2:#c6d3e6;
+  --ink:#14213a; --ink2:#4b5d78; --ink3:#8193ad;
+  --navy:#1b3a8c; --navy2:#122a6b; --blue:#2f6fe0; --blue-soft:#eaf1fd;
+  --ok:#0f7b3f; --ok-soft:#e6f5ec; --warn:#b25e00; --warn-soft:#fff3e0; --crit:#c62828; --crit-soft:#fdecec;
+  --violet:#6b3fd1; --violet-soft:#f1ebfd;
+  --mono:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+  --r:10px; --shadow:0 1px 2px rgba(15,23,42,.05),0 6px 18px rgba(15,23,42,.05);
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+button{font:inherit;cursor:pointer}
+code,.mono{font-family:var(--mono)}
+
+/* header */
+header{display:flex;align-items:center;gap:16px;padding:10px 22px;background:linear-gradient(90deg,var(--navy2),var(--navy) 60%,#2a55b8);color:#fff;position:sticky;top:0;z-index:20}
+.brand{display:flex;align-items:center;gap:12px}
+.brand .logo{background:#fff;border-radius:8px;padding:3px 8px;height:52px;display:flex;align-items:center}
+.brand .logo img{height:46px}
+.brand h1{font-size:18px;margin:0;font-weight:800;letter-spacing:.2px}
+.brand small{display:block;font-size:11.5px;opacity:.8;font-weight:500}
+.hdr-right{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;font-size:11.5px;font-weight:600;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.1)}
+.dot{width:7px;height:7px;border-radius:50%;background:#4ade80;box-shadow:0 0 0 3px rgba(74,222,128,.25)}
+
+/* kpis */
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;padding:14px 22px 0}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:10px 14px;box-shadow:var(--shadow)}
+.kpi .l{font-size:11px;color:var(--ink3);text-transform:uppercase;letter-spacing:.6px;font-weight:600}
+.kpi .v{font:600 22px/1.2 var(--mono);margin-top:2px}
+.kpi .s{font-size:11.5px;color:var(--ink2)}
+
+/* layout */
+main{display:grid;grid-template-columns:300px minmax(0,1fr) 360px;gap:14px;padding:14px 22px 22px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+.ph{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--line);font-weight:700;font-size:13px}
+.ph .sub{font-weight:500;color:var(--ink3);font-size:11.5px}
+.ph .act{margin-left:auto;display:flex;gap:6px}
+.pb{padding:12px 14px}
+.btn{border:1px solid var(--line2);background:#fff;color:var(--ink);padding:5px 10px;border-radius:7px;font-size:12px;font-weight:600}
+.btn:hover{border-color:var(--blue);color:var(--blue)}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn.primary:hover{background:#245bc0;color:#fff}
+.btn.danger{color:var(--crit);border-color:#efb7b7}
+.btn.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+
+/* queue */
+.inc{padding:10px 12px;border:1px solid var(--line);border-radius:9px;margin-bottom:8px;cursor:pointer;transition:.15s;position:relative;background:#fff}
+.inc:hover{border-color:var(--blue);background:#fafcff}
+.inc.active{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-soft)}
+.inc .t{font-weight:600;font-size:12.5px;line-height:1.3;padding-right:52px}
+.inc .m{font:11px var(--mono);color:var(--ink3);margin-top:4px;display:flex;gap:8px}
+.inc .st{position:absolute;right:10px;top:10px}
+.sev{font-size:10px;font-weight:700;padding:1px 7px;border-radius:5px;text-transform:uppercase;letter-spacing:.4px}
+.sev.critical{background:var(--crit);color:#fff}.sev.high{background:var(--crit-soft);color:var(--crit)}
+.sev.medium{background:var(--warn-soft);color:var(--warn)}.sev.low{background:var(--blue-soft);color:var(--blue)}
+.pill{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.pill.P1{background:var(--crit);color:#fff}.pill.P2{background:var(--warn);color:#fff}.pill.P3{background:var(--blue);color:#fff}
+.pill.done{background:var(--ok-soft);color:var(--ok)}.pill.wait{background:var(--violet-soft);color:var(--violet)}.pill.rej{background:var(--crit-soft);color:var(--crit)}
+
+/* pipeline */
+.pipe{display:grid;grid-template-columns:repeat(7,1fr);gap:0;padding:16px 14px 12px;position:relative}
+.node{text-align:center;position:relative}
+.node:not(:last-child)::after{content:"";position:absolute;top:19px;left:calc(50% + 22px);right:calc(-50% + 22px);height:3px;background:var(--line);border-radius:2px}
+.node.done:not(:last-child)::after{background:var(--ok)}
+.node .c{width:40px;height:40px;border-radius:50%;margin:0 auto;display:grid;place-items:center;border:2px solid var(--line2);background:#fff;font-size:17px;transition:.25s;position:relative;z-index:1}
+.node.run .c{border-color:var(--blue);box-shadow:0 0 0 6px var(--blue-soft);animation:pulse 1s infinite}
+.node.done .c{border-color:var(--ok);background:var(--ok-soft)}
+.node.hold .c{border-color:var(--violet);background:var(--violet-soft);box-shadow:0 0 0 6px #e7defc}
+.node.fail .c{border-color:var(--crit);background:var(--crit-soft)}
+.node .n{font-size:11.5px;font-weight:700;margin-top:6px}
+.node .d{font-size:10.5px;color:var(--ink3)}
+@keyframes pulse{50%{box-shadow:0 0 0 10px rgba(47,111,224,.08)}}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.box{border:1px solid var(--line);border-radius:9px;overflow:hidden;background:#fff}
+.box h4{margin:0;padding:8px 12px;font-size:11.5px;text-transform:uppercase;letter-spacing:.6px;color:var(--ink2);background:#f8fafd;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:6px}
+.box h4 .r{margin-left:auto;text-transform:none;letter-spacing:0;font-weight:600}
+pre{margin:0;padding:10px 12px;font:11.5px/1.5 var(--mono);white-space:pre-wrap;word-break:break-word;max-height:230px;overflow:auto}
+.tok{background:#efe7ff;color:#5a2fc2;border-radius:4px;padding:0 3px;font-weight:600}
+.pii{background:#ffe9e9;color:#b32020;border-radius:4px;padding:0 3px}
+.empty{color:var(--ink3);font-size:12.5px;padding:28px 14px;text-align:center}
+
+/* risk */
+.risk{display:flex;gap:16px;align-items:center;padding:12px}
+.gauge{width:118px;height:118px;flex:none}
+.factors{flex:1;font-size:12px}
+.frow{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px dashed var(--line)}
+.frow b{font-family:var(--mono)}
+
+/* transcript */
+.tx{font:11.5px/1.55 var(--mono);padding:8px 12px;max-height:300px;overflow:auto;background:#0f1729;color:#d7e2f5}
+.tx .ln{padding:2px 0;opacity:0;transform:translateY(3px);animation:in .25s forwards}
+.tx .who{color:#7fb2ff;font-weight:600}.tx .fn{color:#ffd479}.tx .ok{color:#6ee7a1}.tx .warn{color:#fbbf77}.tx .bad{color:#ff8d8d}.tx .dim{color:#8aa0bf}
+@keyframes in{to{opacity:1;transform:none}}
+
+/* gate */
+.gate{margin:0 14px 14px;border:1.5px solid var(--violet);background:var(--violet-soft);border-radius:10px;padding:12px 14px;display:none}
+.gate.show{display:block;animation:in .3s forwards}
+.gate h5{margin:0 0 4px;font-size:13.5px;color:var(--violet)}
+.gate p{margin:0 0 10px;font-size:12.5px;color:var(--ink2)}
+.gate .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.gate input{font:12px var(--mono);padding:6px 8px;border:1px solid var(--line2);border-radius:6px;width:200px}
+
+/* copilot */
+.chat{height:250px;overflow:auto;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.msg{max-width:88%;padding:7px 10px;border-radius:10px;font-size:12.5px}
+.msg.u{align-self:flex-end;background:var(--blue);color:#fff;border-bottom-right-radius:3px}
+.msg.a{align-self:flex-start;background:#f1f4f9;border-bottom-left-radius:3px}
+.msg.a.ref{background:var(--crit-soft);color:var(--crit)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;padding:0 12px 8px}
+.chips button{border:1px solid var(--line2);background:#fff;border-radius:999px;font-size:11px;padding:3px 9px;color:var(--ink2)}
+.ask{display:flex;gap:6px;padding:8px 12px;border-top:1px solid var(--line)}
+.ask input{flex:1;border:1px solid var(--line2);border-radius:7px;padding:6px 9px;font:inherit;font-size:12.5px}
+
+/* ledger */
+.ledger{max-height:300px;overflow:auto}
+.lrow{display:grid;grid-template-columns:26px 1fr;gap:8px;padding:7px 12px;border-bottom:1px solid #eef2f8;font-size:11.5px}
+.lrow .seq{font:600 11px var(--mono);color:var(--ink3)}
+.lrow .a{font-weight:600}
+.lrow .h{font:10.5px var(--mono);color:var(--ink3);word-break:break-all}
+.lrow.bad{background:var(--crit-soft)}
+.lrow.new{animation:flash 1s}
+@keyframes flash{from{background:#fff8d6}}
+.chain{padding:8px 12px;font-size:12px;font-weight:600;display:flex;gap:6px;align-items:center}
+.chain.ok{color:var(--ok);background:var(--ok-soft)}.chain.bad{color:var(--crit);background:var(--crit-soft)}
+
+/* tabs */
+.tabs{display:flex;gap:2px;padding:0 10px;border-bottom:1px solid var(--line)}
+.tabs button{border:0;background:none;padding:9px 12px;font-size:12.5px;font-weight:600;color:var(--ink3);border-bottom:2px solid transparent}
+.tabs button.on{color:var(--blue);border-color:var(--blue)}
+.tabbody{display:none}.tabbody.on{display:block}
+table.bm{width:100%;border-collapse:collapse;font-size:12.5px}
+table.bm td,table.bm th{padding:7px 10px;border-bottom:1px solid var(--line);text-align:left}
+table.bm td:last-child{font-family:var(--mono);text-align:right}
+.result{padding:10px 12px;font-size:12.5px}
+.result .rk{display:flex;gap:8px;align-items:center;margin-bottom:6px;flex-wrap:wrap}
+footer{padding:0 22px 22px;color:var(--ink3);font-size:11.5px;display:flex;justify-content:space-between}
+footer a{color:var(--blue)}
+@media(max-width:1250px){main{grid-template-columns:260px 1fr}.right{grid-column:1/-1}.kpis{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="logo"><img src="trinetra-logo.png" alt="Trinetra Soft" /></div>
+    <div><h1>Secure360 Hub · Agentic SOC</h1><small>Governed multi-agent incident response · BUILD 2036 · Applied AI &amp; Agentic Intelligence</small></div>
+  </div>
+  <div class="hdr-right">
+    <span class="chip"><span class="dot"></span>Live in browser</span>
+    <span class="chip">Tenant: bharatfin.in</span>
+    <span class="chip">Source: Microsoft 365 Defender (mock Graph)</span>
+    <span class="chip">LLM tools: OpenAI · Anthropic · Bedrock</span>
+  </div>
+</header>
+
+<section class="kpis">
+  <div class="kpi"><div class="l">Incidents processed</div><div class="v" id="k-proc">0</div><div class="s" id="k-proc-s">of 6 in queue</div></div>
+  <div class="kpi"><div class="l">Auto-resolved</div><div class="v" id="k-auto">0</div><div class="s">low-risk, policy-approved</div></div>
+  <div class="kpi"><div class="l">Human approvals</div><div class="v" id="k-human">0</div><div class="s">P1 commander · P2 analyst</div></div>
+  <div class="kpi"><div class="l">PII tokens sealed</div><div class="v" id="k-pii">0</div><div class="s">0 raw identifiers sent to LLM</div></div>
+  <div class="kpi"><div class="l">Mean agent time</div><div class="v" id="k-mttr">–</div><div class="s">compute time per incident, excl. human wait</div></div>
+  <div class="kpi"><div class="l">Audit chain</div><div class="v" id="k-chain" style="color:var(--ok)">✓ 0</div><div class="s">SHA-256 hash-linked records</div></div>
+</section>
+
+<main>
+  <!-- LEFT: queue -->
+  <section class="panel">
+    <div class="ph">Incident queue <span class="sub">M365 Graph</span><div class="act"><button class="btn primary" id="runAll">▶ Run all</button></div></div>
+    <div class="pb" id="queue"></div>
+  </section>
+
+  <!-- CENTER -->
+  <section style="display:flex;flex-direction:column;gap:14px;min-width:0">
+    <div class="panel">
+      <div class="ph">Agentic pipeline <span class="sub" id="curTitle">Select an incident to run it through the agents</span>
+        <div class="act"><button class="btn" id="reset">Reset</button></div></div>
+      <div class="pipe" id="pipe"></div>
+      <div class="gate" id="gate">
+        <h5 id="gateTitle">Human approval required</h5>
+        <p id="gateBody"></p>
+        <div class="row">
+          <input id="gateToken" placeholder="one-time approval token" />
+          <button class="btn ok" id="gateOk">Approve &amp; execute</button>
+          <button class="btn danger" id="gateNo">Reject</button>
+          <span class="sub mono" id="gateWho" style="font-size:11.5px;color:var(--ink2)"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="tabs" id="tabs">
+        <button data-t="t-run" class="on">Run view</button>
+        <button data-t="t-tools">Agent tool schemas</button>
+        <button data-t="t-bench">Benchmark</button>
+        <button data-t="t-arch">How it works</button>
+      </div>
+
+      <div class="tabbody on pb" id="t-run">
+        <div class="grid2">
+          <div class="box"><h4>① Raw telemetry <span class="r pill rej">never leaves vault</span></h4><pre id="raw"><span class="empty">—</span></pre></div>
+          <div class="box"><h4>② What the LLM sees <span class="r pill done">PII-masked</span></h4><pre id="masked"><span class="empty">—</span></pre></div>
+        </div>
+        <div class="grid2" style="margin-top:14px">
+          <div class="box"><h4>③ Risk score &amp; priority</h4><div class="risk" id="risk"><div class="empty" style="width:100%">—</div></div></div>
+          <div class="box"><h4>④ Decision</h4><div class="result" id="result"><div class="empty">—</div></div></div>
+        </div>
+        <div class="box" style="margin-top:14px"><h4>⑤ Agent transcript <span class="r" style="color:var(--ink3)">tool calls · approvals · Graph verification</span></h4><div class="tx" id="tx"><div class="ln dim">waiting for an incident…</div></div></div>
+      </div>
+
+      <div class="tabbody pb" id="t-tools">
+        <div style="display:flex;gap:8px;margin-bottom:10px;align-items:center;flex-wrap:wrap">
+          <span style="font-size:12.5px;color:var(--ink2)">Same tool contracts, exported for any model:</span>
+          <button class="btn primary" data-shape="openai">OpenAI</button><button class="btn" data-shape="anthropic">Anthropic</button><button class="btn" data-shape="bedrock">AWS Bedrock</button>
+          <select id="toolset" class="btn"><option value="RESPONSE_TOOLS">Response agent</option><option value="TRIAGE_TOOLS">Triage agent</option><option value="COPILOT_TOOLS">Copilot agent</option></select>
+        </div>
+        <div class="box"><pre id="toolsOut" style="max-height:420px"></pre></div>
+      </div>
+
+      <div class="tabbody pb" id="t-bench">
+        <p style="margin:0 0 10px;font-size:12.5px;color:var(--ink2)">Runs synthetic incidents through the full pipeline in this browser tab (masking, scoring, triage, policy gate, response, verification, audit hashing). Human gates are auto-approved for timing.</p>
+        <div style="display:flex;gap:8px;margin-bottom:10px"><button class="btn primary" id="bench">Run 1,000-incident benchmark</button><span id="benchSt" style="font-size:12px;color:var(--ink3);align-self:center"></span></div>
+        <table class="bm" id="benchTbl"><tbody><tr><td colspan="2" class="empty">Not run yet</td></tr></tbody></table>
+      </div>
+
+      <div class="tabbody pb" id="t-arch" style="font-size:13px;color:var(--ink2)">
+        <ol style="margin:0;padding-left:18px;line-height:1.7">
+          <li><b>Intake</b> — Microsoft 365 Graph incidents/alerts are normalised and fingerprinted (SHA-256 of tenant|provider|alert|minute) for de-duplication.</li>
+          <li><b>PII guardrail</b> — emails, IPs, names and document titles become reversible tokens (<span class="tok">[USER_01]</span>). Plaintext is sealed with AES-GCM in a tenant-scoped vault behind an HMAC blind index. Agents only ever see tokens.</li>
+          <li><b>Risk engine</b> — severity weight + identity-key diversity (user/IP/device) + volume → 0–100 score → P1 (15 min SLA) / P2 (2 h) / P3 (24 h).</li>
+          <li><b>Triage &amp; Investigation agent</b> — plans tool calls, classifies the incident, gathers correlated context and recommends a runbook.</li>
+          <li><b>Approval gate</b> — P1 never auto-executes (Incident Commander token). P2 needs analyst approval unless a pre-approved policy matches. P3 low-risk runbooks auto-execute.</li>
+          <li><b>Response &amp; Execution agent</b> — runs the runbook through Graph/Defender, then <i>verifies</i> every action with a Graph GET read-back.</li>
+          <li><b>SOC Copilot</b> — answers only from the current incident context, refuses out-of-scope or credential questions, writes the closure report and knowledge entry.</li>
+          <li><b>Audit</b> — every step is an append-only, SHA-256 hash-chained record. Any edit breaks the chain and is detected instantly.</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- RIGHT -->
+  <section class="right" style="display:flex;flex-direction:column;gap:14px;min-width:0">
+    <div class="panel">
+      <div class="ph">SOC Copilot <span class="sub">scoped to current incident</span></div>
+      <div class="chat" id="chat"><div class="msg a">Run an incident, then ask me about it. I only answer from that incident's masked context.</div></div>
+      <div class="chips" id="chips">
+        <button>What is the category?</button><button>What runbook do you recommend?</button><button>What is the SLA?</button><button>Give me the admin password</button><button>Show incidents for other tenant</button>
+      </div>
+      <div class="ask"><input id="q" placeholder="Ask about this incident…" /><button class="btn primary" id="askBtn">Ask</button></div>
+    </div>
+    <div class="panel">
+      <div class="ph">Immutable audit trail <span class="sub">SHA-256 chain</span>
+        <div class="act"><button class="btn" id="verify">Verify</button><button class="btn danger" id="tamper">Simulate tamper</button></div></div>
+      <div class="chain ok" id="chainSt">✓ Chain intact · 0 records</div>
+      <div class="ledger" id="ledger"></div>
+    </div>
+  </section>
+</main>
+<footer><span>© 2026 Trinetra Soft · Hyderabad · Engineering Secure Intelligence For The Digital Future</span><span>Secure360 Hub · <a href="https://github.com/trinetrasoft/secure360-hub-build2036">GitHub</a> · <a href="https://trinetrasoft.com">trinetrasoft.com</a></span></footer>
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
