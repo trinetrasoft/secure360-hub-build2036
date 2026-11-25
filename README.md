@@ -8,7 +8,7 @@
   <a href="https://trinetrasoft.github.io/secure360-hub-build2036/agentic-soc/"><b>▶ Live agentic SOC demo</b></a> ·
   <a href="https://trinetrasoft.github.io/secure360-hub-build2036/">Secure360 Hub console</a> ·
   <a href="https://trinetrasoft.github.io/secure360-hub-build2036/demo/">Demo video</a> ·
-  <a href="docs/Secure360_Hub_BUILD2036_Trinetra_Soft.pdf">Solution deck (PDF)</a>
+  <a href="submission/">Submission files: deck (PPTX/PDF) &amp; video</a>
 </p>
 
 ---
