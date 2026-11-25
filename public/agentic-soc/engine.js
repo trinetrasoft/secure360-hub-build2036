@@ -5,7 +5,7 @@
  * (backend/app/...) so the full agentic pipeline can run live in a browser
  * on GitHub Pages without a server:
  *
- *   ingest (M365 Graph)  -> PII guardrail vault -> risk score & priority
+ *   ingest (any connector: IdP, cloud, EDR, SaaS, SIEM) -> PII guardrail vault -> risk score & priority
  *   -> Triage/Investigation agent -> approval gate (human-in-the-loop)
  *   -> Response/Execution agent (+ Graph verification) -> SOC Copilot
  *   -> closure report & KB entry, all written to a SHA-256 hash-chained audit log.
@@ -178,13 +178,13 @@ export const TRIAGE_TOOLS = [
   { name: 'query_device_context', description: 'Read correlated device context already stored for this incident.', parameters: obj({ device: str }, ['device']) },
 ];
 export const RESPONSE_TOOLS = [
-  { name: 'revokeSignInSessions', description: 'Revoke Microsoft Entra sign-in sessions for one masked user.', parameters: obj({ userId: str }, ['userId']) },
-  { name: 'disableUser', description: 'Disable one masked Microsoft Entra user.', parameters: obj({ userId: str }, ['userId']) },
-  { name: 'isolateDevice', description: 'Isolate one managed device through the Defender API.', parameters: obj({ deviceId: str }, ['deviceId']) },
-  { name: 'patchIncident', description: 'Set a Microsoft 365 incident status and classification.', parameters: obj({ incidentId: str, status: str, classification: str }, ['incidentId', 'status', 'classification']) },
+  { name: 'revokeSignInSessions', description: 'Revoke all sign-in sessions for one masked user at the identity provider (Okta, Entra ID, Google Workspace).', parameters: obj({ userId: str }, ['userId']) },
+  { name: 'disableUser', description: 'Suspend one masked user at the identity provider or SaaS tenant.', parameters: obj({ userId: str }, ['userId']) },
+  { name: 'isolateDevice', description: 'Network-isolate one managed device through the EDR connector (CrowdStrike, Defender, SentinelOne).', parameters: obj({ deviceId: str }, ['deviceId']) },
+  { name: 'patchIncident', description: 'Set the source incident status and classification (SIEM, EDR, SaaS or ITSM ticket).', parameters: obj({ incidentId: str, status: str, classification: str }, ['incidentId', 'status', 'classification']) },
   { name: 'enrichAlert', description: 'Attach stored correlation context to the incident.', parameters: obj({ incidentId: str }, ['incidentId']) },
   { name: 'notifyUser', description: 'Queue a standard notice to the masked user.', parameters: obj({ userId: str }, ['userId']) },
-  { name: 'graphGet', description: 'Read back user, device, or incident state after remediation.', parameters: obj({ resource: { type: 'string', enum: ['user', 'device', 'incident'] }, id: str }, ['resource', 'id']) },
+  { name: 'graphGet', description: 'Read back user, device, or incident state from the source connector after remediation.', parameters: obj({ resource: { type: 'string', enum: ['user', 'device', 'incident'] }, id: str }, ['resource', 'id']) },
 ];
 export const COPILOT_TOOLS = [
   { name: 'answer_incident_query', description: 'Answer one analyst question using only the current incident context.', parameters: obj({ question: str, context: { type: 'object' } }, ['question', 'context']) },
@@ -413,9 +413,9 @@ export async function runPipeline(incident, { vault, ledger, graph, onStep = () 
   const copilot = new SocCopilotAgent();
 
   // 1. INTAKE — normalise + fingerprint
-  const fp = await eventFingerprint(vault.tenantId, 'microsoft365', incident.id, incident.createdDateTime);
-  await ledger.append('ingestion-pipeline', 'SYSTEM', 'incident.ingested', 'incident', incident.id, `Graph incident ingested fp=${fp.slice(0, 12)}`);
-  await step('intake', { stage: 0, fingerprint: fp, raw: incident });
+  const fp = await eventFingerprint(vault.tenantId, incident.source || 'connector', incident.id, incident.createdDateTime);
+  await ledger.append('ingestion-pipeline', 'SYSTEM', 'incident.ingested', 'incident', incident.id, `${incident.source || 'connector'} incident ingested fp=${fp.slice(0, 12)}`);
+  await step('intake', { stage: 0, fingerprint: fp, raw: incident, source: incident.source });
 
   // 2. GUARDRAIL — mask before the LLM ever sees it
   const masked = await vault.mask({

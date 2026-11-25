@@ -1,4 +1,4 @@
-// Synthetic Microsoft 365 Defender incidents for the live demo.
+// Synthetic multi-source security incidents for the live demo (identity, SaaS, EDR, email, cloud).
 // All people, addresses and devices are fictitious.
 const now = Date.now();
 const iso = (minAgo) => new Date(now - minAgo * 60000).toISOString();
@@ -6,6 +6,7 @@ const iso = (minAgo) => new Date(now - minAgo * 60000).toISOString();
 export const SCENARIOS = [
   {
     id: 'INC-24051',
+    source: 'Okta Identity',
     title: 'Impossible travel: Mumbai → Frankfurt in 12 min',
     severity: 'high',
     createdDateTime: iso(3),
@@ -21,14 +22,15 @@ export const SCENARIOS = [
   },
   {
     id: 'INC-24052',
-    title: 'Malicious OAuth app granted Mail.ReadWrite',
+    source: 'Google Workspace',
+    title: 'Malicious OAuth app granted Gmail + Drive access',
     severity: 'high',
     createdDateTime: iso(9),
     userPrincipalName: 'rahul.verma@bharatfin.in',
     displayName: 'Rahul Verma',
     sourceIp: '103.21.58.190',
     deviceId: '',
-    narrative: 'Illicit consent grant: rahul.verma@bharatfin.in consented to malicious app "PDF-Sign-Pro" requesting Mail.ReadWrite and offline_access from 103.21.58.190.',
+    narrative: 'Illicit consent grant: rahul.verma@bharatfin.in consented to malicious Google Workspace app "PDF-Sign-Pro" requesting gmail.modify and drive scopes from 103.21.58.190.',
     signals: [
       { severity: 'high', user: 'rahul.verma@bharatfin.in', ip: '103.21.58.190' },
       { severity: 'medium', user: 'rahul.verma@bharatfin.in' },
@@ -36,6 +38,7 @@ export const SCENARIOS = [
   },
   {
     id: 'INC-24053',
+    source: 'CrowdStrike Falcon',
     title: 'DLP: board financials synced to personal cloud',
     severity: 'critical',
     createdDateTime: iso(14),
@@ -53,6 +56,7 @@ export const SCENARIOS = [
   },
   {
     id: 'INC-24054',
+    source: 'Gmail · Teams bot',
     title: 'User-reported phishing email (no click)',
     severity: 'medium',
     createdDateTime: iso(22),
@@ -60,7 +64,7 @@ export const SCENARIOS = [
     displayName: 'Suresh Patil',
     sourceIp: '',
     deviceId: '',
-    narrative: 'Phishing email reported by suresh.p@bharatfin.in via Teams bot: fake "KYC update" link. No click recorded.',
+    narrative: 'Phishing email in Gmail reported by suresh.p@bharatfin.in via the Teams bot: fake "KYC update" link. No click recorded.',
     signals: [
       { severity: 'medium', user: 'suresh.p@bharatfin.in' },
       { severity: 'low', user: 'suresh.p@bharatfin.in' },
@@ -68,6 +72,7 @@ export const SCENARIOS = [
   },
   {
     id: 'INC-24055',
+    source: 'Microsoft 365',
     title: 'Mailbox forwarding rule created — notify user',
     severity: 'medium',
     createdDateTime: iso(31),
@@ -80,6 +85,7 @@ export const SCENARIOS = [
   },
   {
     id: 'INC-24056',
+    source: 'AWS GuardDuty',
     title: 'Atypical sign-in from approved corporate VPN',
     severity: 'low',
     createdDateTime: iso(44),
@@ -87,7 +93,7 @@ export const SCENARIOS = [
     displayName: 'Vikram Singh',
     sourceIp: '20.198.4.11',
     deviceId: '',
-    narrative: 'Atypical sign-in for vikram.s@bharatfin.in from 20.198.4.11 is the approved corporate Azure VPN egress. Confirmed false positive.',
+    narrative: 'Atypical console sign-in for vikram.s@bharatfin.in from 20.198.4.11 is the approved corporate AWS Client VPN egress. Confirmed false positive.',
     signals: [{ severity: 'low', user: 'vikram.s@bharatfin.in' }],
   },
 ];

@@ -160,8 +160,8 @@ footer a{color:var(--blue)}
   <div class="hdr-right">
     <span class="chip"><span class="dot"></span>Live in browser</span>
     <span class="chip">Tenant: bharatfin.in</span>
-    <span class="chip">Source: Microsoft 365 Defender (mock Graph)</span>
-    <span class="chip">LLM tools: OpenAI · Anthropic · Bedrock</span>
+    <span class="chip">Sources: Okta · Google Workspace · Microsoft 365 · CrowdStrike · AWS (mock connectors)</span>
+    <span class="chip">LLM: OpenAI · Anthropic · Bedrock</span>
   </div>
 </header>
 
@@ -177,7 +177,7 @@ footer a{color:var(--blue)}
 <main>
   <!-- LEFT: queue -->
   <section class="panel">
-    <div class="ph">Incident queue <span class="sub">M365 Graph</span><div class="act"><button class="btn primary" id="runAll">▶ Run all</button></div></div>
+    <div class="ph">Incident queue <span class="sub">multi-source</span><div class="act"><button class="btn primary" id="runAll">▶ Run all</button></div></div>
     <div class="pb" id="queue"></div>
   </section>
 
@@ -216,7 +216,7 @@ footer a{color:var(--blue)}
           <div class="box"><h4>③ Risk score &amp; priority</h4><div class="risk" id="risk"><div class="empty" style="width:100%">—</div></div></div>
           <div class="box"><h4>④ Decision</h4><div class="result" id="result"><div class="empty">—</div></div></div>
         </div>
-        <div class="box" style="margin-top:14px"><h4>⑤ Agent transcript <span class="r" style="color:var(--ink3)">tool calls · approvals · Graph verification</span></h4><div class="tx" id="tx"><div class="ln dim">waiting for an incident…</div></div></div>
+        <div class="box" style="margin-top:14px"><h4>⑤ Agent transcript <span class="r" style="color:var(--ink3)">tool calls · approvals · connector read-back verification</span></h4><div class="tx" id="tx"><div class="ln dim">waiting for an incident…</div></div></div>
       </div>
 
       <div class="tabbody pb" id="t-tools">
@@ -236,12 +236,12 @@ footer a{color:var(--blue)}
 
       <div class="tabbody pb" id="t-arch" style="font-size:13px;color:var(--ink2)">
         <ol style="margin:0;padding-left:18px;line-height:1.7">
-          <li><b>Intake</b> — Microsoft 365 Graph incidents/alerts are normalised and fingerprinted (SHA-256 of tenant|provider|alert|minute) for de-duplication.</li>
+          <li><b>Intake</b> — incidents and alerts from any connected tool (identity: Okta, Entra ID, Google; cloud: AWS, Azure, GCP; endpoint: CrowdStrike, Defender, SentinelOne; SaaS &amp; email: Google Workspace, Microsoft 365; SIEM/ITSM: Splunk, Elastic, ServiceNow) are normalised to one canonical event and fingerprinted (SHA-256 of tenant|provider|alert|minute) for de-duplication.</li>
           <li><b>PII guardrail</b> — emails, IPs, names and document titles become reversible tokens (<span class="tok">[USER_01]</span>). Plaintext is sealed with AES-GCM in a tenant-scoped vault behind an HMAC blind index. Agents only ever see tokens.</li>
           <li><b>Risk engine</b> — severity weight + identity-key diversity (user/IP/device) + volume → 0–100 score → P1 (15 min SLA) / P2 (2 h) / P3 (24 h).</li>
           <li><b>Triage &amp; Investigation agent</b> — plans tool calls, classifies the incident, gathers correlated context and recommends a runbook.</li>
           <li><b>Approval gate</b> — P1 never auto-executes (Incident Commander token). P2 needs analyst approval unless a pre-approved policy matches. P3 low-risk runbooks auto-execute.</li>
-          <li><b>Response &amp; Execution agent</b> — runs the runbook through Graph/Defender, then <i>verifies</i> every action with a Graph GET read-back.</li>
+          <li><b>Response &amp; Execution agent</b> — runs the runbook through the source tool’s connector (IdP, EDR, cloud or SaaS API), then <i>verifies</i> every action with a read-back from that same tool.</li>
           <li><b>SOC Copilot</b> — answers only from the current incident context, refuses out-of-scope or credential questions, writes the closure report and knowledge entry.</li>
           <li><b>Audit</b> — every step is an append-only, SHA-256 hash-chained record. Any edit breaks the chain and is detected instantly.</li>
         </ol>

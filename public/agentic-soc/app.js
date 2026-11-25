@@ -11,7 +11,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms * (window.__SPEED ?? 1
 let vault, ledger, graph, results, current, busy = false;
 const copilot = new SocCopilotAgent();
 const NODES = [
-  ['📥', 'Intake', 'Graph ingest'], ['🛡️', 'Guardrail', 'PII vault'], ['📊', 'Risk', 'score → P1-P3'],
+  ['📥', 'Intake', 'any-source ingest'], ['🛡️', 'Guardrail', 'PII vault'], ['📊', 'Risk', 'score → P1-P3'],
   ['🤖', 'Triage agent', 'investigate'], ['✋', 'Approval', 'human gate'], ['⚡', 'Response agent', 'execute+verify'], ['✅', 'Copilot', 'close & report'],
 ];
 const NODE_FOR = { intake: 0, mask: 1, risk: 2, triage: 3, gate: 4, approval: 4, respond: 5, close: 6 };
@@ -39,7 +39,7 @@ function renderQueue() {
     return `<div class="inc ${current === s.id ? 'active' : ''}" data-id="${s.id}">
       <div class="st">${st}</div>
       <div class="t">${esc(s.title)}</div>
-      <div class="m"><span class="sev ${s.severity}">${s.severity}</span><span>${s.id}</span><span>${s.signals.length} signal${s.signals.length > 1 ? 's' : ''}</span></div></div>`;
+      <div class="m"><span class="sev ${s.severity}">${s.severity}</span><span>${s.id}</span><span>${esc(s.source)}</span></div></div>`;
   }).join('');
   document.querySelectorAll('.inc').forEach((el) => (el.onclick = () => !busy && runOne(SCENARIOS.find((s) => s.id === el.dataset.id))));
 }
@@ -121,7 +121,7 @@ async function runOne(inc) {
     approver: (d) => askHuman(d, inc),
     onStep: async (s) => {
       const i = NODE_FOR[s.id];
-      if (s.id === 'intake') tx(`<span class="who">ingest</span> Graph incident ${inc.id} normalised · fingerprint <span class="dim">${s.fingerprint.slice(0, 16)}…</span>`);
+      if (s.id === 'intake') tx(`<span class="who">ingest</span> ${esc(inc.source)} incident ${inc.id} normalised · fingerprint <span class="dim">${s.fingerprint.slice(0, 16)}…</span>`);
       if (s.id === 'mask') {
         $('#masked').innerHTML = highlight(s.masked);
         tx(`<span class="who">guardrail</span> ${s.vaultSize} identifiers sealed in AES-GCM vault · LLM context contains <span class="ok">0 raw PII</span>`);
@@ -151,7 +151,7 @@ async function runOne(inc) {
       }
       if (s.id === 'respond') {
         for (const c of s.executed) callLine('response-agent', c);
-        for (const c of s.verified) callLine('verify', c);
+        for (const c of s.verified) callLine('verify·' + inc.source.split(' ')[0].toLowerCase(), c);
       }
       if (s.id === 'close') {
         tx(`<span class="who">soc-copilot</span> <span class="fn">write_closure_report</span> + <span class="fn">write_knowledge_entry</span> · <span class="ok">${esc(s.closure.output.report.title)}</span>`);
